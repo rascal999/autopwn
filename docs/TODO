@@ -1,6 +1,11 @@
 autopwn (API package)
 
+* Import target list/file etc (apk or ip list)
+* Authentication (users can only access own jobs)
+* TLS/SSL
 * Add new tools
+- nmap monlist
+- snmpwalk
 * Develop assessments (could be client side?)
 - Tried to develop assessments on server side. This included a new job list for
   assessments and tried to work with return code on this (which was badly coded and
