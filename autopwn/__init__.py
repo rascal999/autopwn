@@ -5,7 +5,7 @@ import json
 import locale
 import os
 import shutil
-#import ssl
+import ssl
 import sqlite3
 import sys
 import threading
@@ -404,6 +404,23 @@ class DependenciesId(Resource):
 
         return data
 
+class CheckCertificate():
+    def __init__(self):
+        if os.path.isfile(os.path.dirname(os.path.abspath(__file__)) + '/keys/cert.crt') != True:
+            print("First run, generating certificate..")
+            execute_string = "openssl req -nodes -x509 -newkey rsa:4096 -keyout " + \
+                            os.path.dirname(os.path.abspath(__file__)) + \
+                            "/keys/key.pem -out " + os.path.dirname(os.path.abspath(__file__)) + \
+                            "/keys/cert.crt -days 356 -subj \"/C=AP/ST=Land/L=autopwn/O=AP Team/CN=127.0.0.1\""
+
+            proc = Popen(execute_string, stdout=PIPE, stderr=PIPE, shell=True)
+
+            decode_locale = lambda s: s.decode(getlocale()[1])
+            self.tool_stdout, self.tool_stderr = map(decode_locale, proc.communicate())
+
+            # Callback / pause from here
+            return_code = proc.returncode
+
 # Pong!
 # curl -i http://127.0.0.1:5000/ping
 api.add_resource(Pong, '/ping')
@@ -419,7 +436,6 @@ api.add_resource(Assessments, '/assessments')
 # Fetch assessment id
 # curl -i http://127.0.0.1:5000/assessments/1
 api.add_resource(AssessmentsId, '/assessments/<assessment_id>')
-
 
 # Fetch all tool jobs
 # curl -i http://127.0.0.1:5000/jobs
@@ -453,17 +469,23 @@ api.add_resource(ToolsExportsId, '/tools/jobs/exports/<job_id>')
 
 def main():
     # TODO Hack, fix
-    locale.setlocale(locale.LC_CTYPE, 'en_US.UTF-8')
+    #locale.setlocale(locale.LC_CTYPE, 'en_US.UTF-8')
+
     print(os.path.dirname(os.path.abspath(__file__)))
-    #context = ssl.SSLContext(ssl.PROTOCOL_TLSv1_2)
-    #context.load_cert_chain('yourserver.crt', 'yourserver.key')
+
+    # Check for certificate (or create if non-existent)
+    CheckCertificate()
+
+    context = ssl.SSLContext(ssl.PROTOCOL_TLSv1_2)
+    context.load_cert_chain(os.path.dirname(os.path.abspath(__file__)) + "/keys/cert.crt", \
+                            os.path.dirname(os.path.abspath(__file__)) + "/keys/key.pem")
 
     if os.path.isfile('/.dockerinit'):
         print("Running in docker")
-        #app.run(host='0.0.0.0', debug=True,threaded=True,ssl_context=context)
+        app.run(host='0.0.0.0', debug=True,threaded=True,ssl_context=context)
         app.run(host='0.0.0.0', debug=True,threaded=True)
     else:
-        #app.run(debug=True,threaded=True,ssl_context=context)
+        app.run(debug=True,threaded=True,ssl_context=context)
         app.run(debug=True,threaded=True,port=5000)
 
 if __name__ == '__main__':
