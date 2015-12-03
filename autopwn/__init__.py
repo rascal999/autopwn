@@ -274,6 +274,7 @@ class ToolsJobsIdExecute(Resource):
                                 '/' + strftime("%Y%m%d") + \
                                 "_autopwn_" + \
                                 job_data['result'][0]['target_name'] + \
+                                "_" + job_data['result'][0]['target'] + \
                                 "_" + tool['name']
         try:
             os.makedirs(job['output_dir'])
