@@ -2,6 +2,7 @@
 
 import errno
 import json
+import locale
 import os
 import shutil
 #import ssl
@@ -451,6 +452,8 @@ api.add_resource(ToolsExports, '/tools/jobs/exports')
 api.add_resource(ToolsExportsId, '/tools/jobs/exports/<job_id>')
 
 def main():
+    # TODO Hack, fix
+    locale.setlocale(locale.LC_TYPE, 'en_US.UTF-8')
     print(os.path.dirname(os.path.abspath(__file__)))
     #context = ssl.SSLContext(ssl.PROTOCOL_TLSv1_2)
     #context.load_cert_chain('yourserver.crt', 'yourserver.key')
