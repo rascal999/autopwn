@@ -50,6 +50,7 @@ class RunThreads (threading.Thread):
         # Always check any tools provided by
         # community members
         print("Running")
+        print("Execute string " + self.tool['execute_string'])
         proc = Popen(self.tool['execute_string'], stdout=PIPE, stderr=PIPE, shell=True)
 
         decode_locale = lambda s: s.decode(getlocale()[1])
@@ -62,6 +63,8 @@ class RunThreads (threading.Thread):
         zip_file = os.path.dirname(os.path.abspath(__file__)) + \
             "/" + job['target_name'] + '_' + str(job['id'])
         shutil.make_archive(zip_file, 'zip', job['output_dir'])
+        # TODO This could be dodgy
+        shutil.rmtree(job['output_dir'])
 
         # Update completed and return_code field in db
         con = sqlite3.connect(os.path.dirname(os.path.abspath(__file__)) + '/assets.db')
