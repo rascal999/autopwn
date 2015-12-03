@@ -409,7 +409,8 @@ class CheckCertificate():
             execute_string = "openssl req -nodes -x509 -newkey rsa:4096 -keyout " + \
                             os.path.dirname(os.path.abspath(__file__)) + \
                             "/keys/key.pem -out " + os.path.dirname(os.path.abspath(__file__)) + \
-                            "/keys/cert.crt -days 356 -subj \"/C=AP/ST=Land/L=autopwn/O=AP Team/CN=127.0.0.1\""
+                            "/keys/cert.crt -days 356 -subj " + \
+                            "\"/C=AP/ST=Land/L=autopwn/O=AP Team/CN=127.0.0.1/subjectAltName=127.0.0.1\""
 
             proc = Popen(execute_string, stdout=PIPE, stderr=PIPE, shell=True)
 
@@ -480,11 +481,11 @@ def main():
 
     if os.path.isfile('/.dockerinit'):
         print("Running in docker")
-        app.run(host='0.0.0.0', debug=True,threaded=True,ssl_context=context)
-        app.run(host='0.0.0.0', debug=True,threaded=True)
+        app.run(host='0.0.0.0',debug=True,threaded=True,ssl_context=context)
+        #app.run(host='0.0.0.0',debug=True,threaded=True)
     else:
         app.run(debug=True,threaded=True,ssl_context=context)
-        app.run(debug=True,threaded=True,port=5000)
+        #app.run(debug=True,threaded=True,port=5000)
 
 if __name__ == '__main__':
     main()
