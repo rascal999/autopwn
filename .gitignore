@@ -9,7 +9,7 @@ __pycache__/
 *.swp
 
 # generated certs
-keys/
+keys/*
 
 # C extensions
 *.so
