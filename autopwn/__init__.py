@@ -297,7 +297,6 @@ class ToolsJobsIdExecute(Resource):
             ddict_options[option] = job[option]
 
         tool['execute_string'] = tool['execute_string'].format(**ddict_options)
-        print(tool['execute_string'])
 
         thread = []
         # Tool string generated, execute
@@ -363,7 +362,6 @@ class ToolsExports(Resource):
 
         cur.execute("SELECT id, zip_file FROM tool_jobs")
         data = dict(result=[dict(r) for r in cur.fetchall()])
-        print(data)
 
         # Close connection
         if con:
@@ -469,7 +467,7 @@ api.add_resource(ToolsExportsId, '/tools/jobs/exports/<job_id>')
 
 def main():
     # TODO Hack, fix
-    #locale.setlocale(locale.LC_CTYPE, 'en_US.UTF-8')
+    locale.setlocale(locale.LC_CTYPE, 'en_US.UTF-8')
 
     print(os.path.dirname(os.path.abspath(__file__)))
 
