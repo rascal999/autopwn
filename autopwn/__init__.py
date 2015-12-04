@@ -5,7 +5,7 @@ import json
 import locale
 import os
 import shutil
-import ssl
+#import ssl
 import sqlite3
 import sys
 import threading
@@ -410,7 +410,7 @@ class CheckCertificate():
                             os.path.dirname(os.path.abspath(__file__)) + \
                             "/keys/key.pem -out " + os.path.dirname(os.path.abspath(__file__)) + \
                             "/keys/cert.crt -days 356 -subj " + \
-                            "\"/C=AP/ST=Land/L=autopwn/O=AP Team/CN=127.0.0.1/subjectAltName=127.0.0.1\""
+                            "\"/C=AP/ST=Land/L=autopwn/O=AP Team/subjectAltName=IP:127.0.0.1\""
 
             proc = Popen(execute_string, stdout=PIPE, stderr=PIPE, shell=True)
 
@@ -468,24 +468,24 @@ api.add_resource(ToolsExportsId, '/tools/jobs/exports/<job_id>')
 
 def main():
     # TODO Hack, fix
-    locale.setlocale(locale.LC_CTYPE, 'en_US.UTF-8')
+    #locale.setlocale(locale.LC_CTYPE, 'en_US.UTF-8')
 
     print(os.path.dirname(os.path.abspath(__file__)))
 
     # Check for certificate (or create if non-existent)
-    CheckCertificate()
+    #CheckCertificate()
 
-    context = ssl.SSLContext(ssl.PROTOCOL_TLSv1_2)
-    context.load_cert_chain(os.path.dirname(os.path.abspath(__file__)) + "/keys/cert.crt", \
-                            os.path.dirname(os.path.abspath(__file__)) + "/keys/key.pem")
+    #context = ssl.SSLContext(ssl.PROTOCOL_TLSv1_2)
+    #context.load_cert_chain(os.path.dirname(os.path.abspath(__file__)) + "/keys/cert.crt", \
+    #                        os.path.dirname(os.path.abspath(__file__)) + "/keys/key.pem")
 
     if os.path.isfile('/.dockerinit'):
         print("Running in docker")
-        app.run(host='0.0.0.0',debug=True,threaded=True,ssl_context=context)
-        #app.run(host='0.0.0.0',debug=True,threaded=True)
+        #app.run(host='0.0.0.0',debug=True,threaded=True,ssl_context=context)
+        app.run(host='0.0.0.0',debug=True,threaded=True)
     else:
-        app.run(debug=True,threaded=True,ssl_context=context)
-        #app.run(debug=True,threaded=True,port=5000)
+        #app.run(debug=True,threaded=True,ssl_context=context)
+        app.run(debug=True,threaded=True,port=5000)
 
 if __name__ == '__main__':
     main()
