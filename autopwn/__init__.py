@@ -218,7 +218,7 @@ class ToolsJobs(Resource):
         cur = con.cursor()
 
         # curl -i --data "tool=1&target=localhost&target_name=target_name&protocol=https&port_number=1337&user=a_user&password=a_password&user_file=/user/file&password_file=/password/file" http://127.0.0.1:5000/jobs
-        cur.execute("INSERT INTO tool_jobs(tool,target,target_name,protocol,port_number,user,password,user_file,password_file) VALUES(?,?,?,?,?,?,?,?,?)",(args['tool'],args['target'],args['target_name'],args['protocol'],args['port_number'],args['user'],args['password'],args['user_file'],args['password_file']))
+        cur.execute("INSERT INTO tool_jobs(tool,target,target_name,protocol,port_number,user,password,user_file,password_file) VALUES(?,?,?,?,?,?,?,?,?)",(args['tool'],args['target'],args['target_name'].replace('/','_'),args['protocol'],args['port_number'],args['user'],args['password'],args['user_file'],args['password_file']))
         data = cur.lastrowid
         con.commit()
 
