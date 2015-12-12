@@ -276,7 +276,7 @@ class ToolsJobsIdExecute(Resource):
                                 "_autopwn_" + \
                                 job_data['result'][0]['target_name'] + \
                                 "_" + job_data['result'][0]['target'].replace('/','_') + \
-                                "_" + job_data['result'][0]['id'].replace('/','_') + \
+                                "_" + job_data['result'][0]['id'] + \
                                 "_" + tool['name']
         try:
             os.makedirs(job['output_dir'])
