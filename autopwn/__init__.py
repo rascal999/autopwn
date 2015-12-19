@@ -11,7 +11,8 @@ import sys
 import threading
 
 from collections import OrderedDict, defaultdict
-from flask import Flask, make_response, send_file
+from flask import Flask, make_response, send_file, jsonify
+from flask.ext.cors import CORS
 from flask_restful import reqparse, abort, Api, Resource
 from time import gmtime, strftime
 from locale import getlocale
@@ -20,6 +21,7 @@ from subprocess import Popen, PIPE
 # TODO
 #      - TLS
 app = Flask(__name__, static_url_path=os.path.dirname(os.path.abspath(__file__)))
+CORS(app)
 api = Api(app)
 
 parser = reqparse.RequestParser()
@@ -37,6 +39,7 @@ parser.add_argument('user')
 parser.add_argument('password')
 parser.add_argument('user_file')
 parser.add_argument('password_file')
+parser.add_argument('url')
 
 class RunThreads (threading.Thread):
     def __init__(self, tool, job, context):
@@ -193,17 +196,17 @@ class ToolsId(Resource):
 class ToolsJobs(Resource):
     # List jobs
     def get (self):
-        args = parser.parse_args()
+        #args = parser.parse_args()
         con = sqlite3.connect(os.path.dirname(os.path.abspath(__file__)) + '/assets.db')
         con.row_factory = sqlite3.Row
         cur = con.cursor()
 
         # If /jobs?search=xxx not specified then SELECT *
-        if args['search'] != None:
-           cur.execute("SELECT * FROM tool_jobs WHERE tool LIKE ? OR target LIKE ? OR target_name LIKE ? OR protocol LIKE ? OR port_number LIKE ? OR user like ? OR password LIKE ? OR user_file LIKE ? OR password_file LIKE ?",('%' + args['search'] + '%','%' + args['search'] + '%','%' + args['search'] + '%','%' + args['search'] + '%','%' + args['search'] + '%','%' + args['search'] + '%','%' + args['search'] + '%','%' + args['search'] + '%','%' + args['search'] + '%'))
-        else:
-           cur.execute("SELECT * FROM tool_jobs")
-        data = dict(result=[dict(r) for r in cur.fetchall()])
+        #if args['search'] != None:
+        #   cur.execute("SELECT * FROM tool_jobs WHERE tool LIKE ? OR target LIKE ? OR target_name LIKE ? OR protocol LIKE ? OR port_number LIKE ? OR user like ? OR password LIKE ? OR user_file LIKE ? OR password_file LIKE ?",('%' + args['search'] + '%','%' + args['search'] + '%','%' + args['search'] + '%','%' + args['search'] + '%','%' + args['search'] + '%','%' + args['search'] + '%','%' + args['search'] + '%','%' + args['search'] + '%','%' + args['search'] + '%'))
+        #else:
+        cur.execute("SELECT * FROM tool_jobs")
+        data = [dict(r) for r in cur.fetchall()]
 
         # Close connection
         if con:
@@ -218,7 +221,7 @@ class ToolsJobs(Resource):
         cur = con.cursor()
 
         # curl -i --data "tool=1&target=localhost&target_name=target_name&protocol=https&port_number=1337&user=a_user&password=a_password&user_file=/user/file&password_file=/password/file" http://127.0.0.1:5000/jobs
-        cur.execute("INSERT INTO tool_jobs(tool,target,target_name,protocol,port_number,user,password,user_file,password_file) VALUES(?,?,?,?,?,?,?,?,?)",(args['tool'],args['target'],args['target_name'].replace('/','_'),args['protocol'],args['port_number'],args['user'],args['password'],args['user_file'],args['password_file']))
+        cur.execute("INSERT INTO tool_jobs(tool,target,target_name,protocol,port_number,user,password,user_file,password_file,url) VALUES(?,?,?,?,?,?,?,?,?,?)",(args['tool'],args['target'],args['target_name'].replace('/','_'),args['protocol'],args['port_number'],args['user'],args['password'],args['user_file'],args['password_file'],args['url']))
         data = cur.lastrowid
         con.commit()
 
@@ -469,7 +472,7 @@ api.add_resource(ToolsExportsId, '/tools/jobs/exports/<job_id>')
 
 def main():
     # TODO Hack, fix
-    locale.setlocale(locale.LC_CTYPE, 'en_US.UTF-8')
+    #locale.setlocale(locale.LC_CTYPE, 'en_US.UTF-8')
 
     print(os.path.dirname(os.path.abspath(__file__)))
 
